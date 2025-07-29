@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error Information - Crane Error Finder Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --warning: #f72585;
+            --danger: #f72585;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f8f9fa;
+            color: var(--dark);
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .status-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .status-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        
+        .crane-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .error-code {
+            display: inline-block;
+            padding: 5px 15px;
+            background: var(--warning);
+            color: white;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-left: 1rem;
+        }
+        
+        .meta-info {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            background: #f1f3f5;
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+        }
+        
+        .meta-item i {
+            margin-right: 8px;
+            opacity: 0.7;
+        }
+        
+        .severity {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .severity.high {
+            background: rgba(247, 37, 133, 0.1);
+            color: var(--danger);
+        }
+        
+        .severity.medium {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+        
+        .severity.low {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+        
+        .error-description {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        
+        .steps-container {
+            margin-top: 2rem;
+        }
+        
+        .step {
+            display: flex;
+            margin-bottom: 2rem;
+            position: relative;
+            padding-left: 40px;
+        }
+        
+        .step-number {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 30px;
+            height: 30px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        .step-content {
+            flex: 1;
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
+        }
+        
+        .step-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+        
+        .step-image {
+            margin-top: 1rem;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .step-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: all 0.3s ease;
+        }
+        
+        .step-image:hover img {
+            transform: scale(1.03);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 0.95rem;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(67, 97, 238, 0.4);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #e9ecef;
+            color: var(--dark);
+        }
+        
+        .btn-secondary:hover {
+            background: #dee2e6;
+            transform: translateY(-3px);
+        }
+        
+        .not-found {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        
+        .not-found-icon {
+            font-size: 5rem;
+            color: var(--warning);
+            margin-bottom: 1.5rem;
+            opacity: 0.7;
+        }
+        
+        .not-found h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+        
+        .not-found p {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem;
+            }
+            
+            .crane-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .error-code {
+                margin-left: 0;
+                margin-top: 0.5rem;
+            }
+            
+            .step {
+                padding-left: 30px;
+            }
+            
+            .step-number {
+                width: 25px;
+                height: 25px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header animate__animated animate__fadeIn">
+        <div class="logo">
+            <div class="logo-icon">CE</div>
+            <h2>CraneError Pro</h2>
+        </div>
+        <button class="btn-outline" onclick="window.location.href='entry-mode.html'">New Search</button>
+    </div>
+    
+    <div class="container">
+        <!-- Content will be dynamically loaded here -->
+        <div id="content" class="animate__animated animate__fadeIn">
+            <!-- Default loading state -->
+            <div class="status-card">
+                <div style="display: flex; justify-content: center; padding: 2rem;">
+                    <div class="loader"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get crane ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const craneId = urlParams.get('craneId');
+        const contentDiv = document.getElementById('content');
+        
+        // Mock database - in a real app, you would fetch from MongoDB
+        const mockDatabase = {
+            "CRN-2023-001": {
+                found: true,
+                model: "Tower Crane X-2000",
+                serial: "TCX2-001-2023",
+                errorCode: "E-102",
+                errorDescription: "Hydraulic pressure has dropped below the minimum operational threshold. This may be caused by a leak in the hydraulic system, low fluid levels, or a failing pump.",
+                severity: "high",
+                lastMaintenance: "2023-05-15",
+                steps: [
+                    {
+                        title: "Check Hydraulic Fluid Level",
+                        description: "Locate the hydraulic fluid reservoir and check the fluid level against the marked indicators. Top up if necessary with the recommended hydraulic fluid (ISO VG 46).",
+                        image: "https://example.com/hydraulic-check.jpg"
+                    },
+                    {
+                        title: "Inspect for Leaks",
+                        description: "Visually inspect all hydraulic lines and connections for signs of leakage. Pay special attention to joints and areas with visible wear.",
+                        image: "https://example.com/leak-inspection.jpg"
+                    },
+                    {
+                        title: "Check Pressure Gauge",
+                        description: "Monitor the hydraulic pressure gauge during operation. Normal operating pressure should be between 250-300 psi. If pressure is inconsistent, the pump may need servicing.",
+                        image: "https://example.com/pressure-gauge.jpg"
+                    },
+                    {
+                        title: "Bleed Air from System",
+                        description: "If the system was recently serviced, there may be air in the lines. Follow the manufacturer's procedure to bleed air from the hydraulic system.",
+                        image: "https://example.com/bleeding-system.jpg"
+                    }
+                ],
+                additionalNotes: "If the problem persists after these steps, contact certified technician for pump inspection. Do not operate the crane if hydraulic pressure cannot be maintained."
+            },
+            "CRN-2023-002": {
+                found: true,
+                model: "Mobile Crane Y-500",
+                serial: "MCY5-002-2023",
+                errorCode: "E-205",
+                errorDescription: "The boom angle sensor is providing inconsistent readings, which may affect load calculations and safety systems.",
+                severity: "medium",
+                lastMaintenance: "2023-06-20",
+                steps: [
+                    {
+                        title: "Inspect Sensor Connections",
+                        description: "Locate the boom angle sensor (typically near the boom pivot point) and check all electrical connections for corrosion or looseness.",
+                        image: "https://example.com/sensor-connections.jpg"
+                    },
+                    {
+                        title: "Clean Sensor Surface",
+                        description: "Gently clean the sensor surface with a dry, lint-free cloth to ensure proper operation.",
+                        image: "https://example.com/cleaning-sensor.jpg"
+                    },
+                    {
+                        title: "Calibrate Sensor",
+                        description: "Follow the manufacturer's calibration procedure to reset the sensor's zero position and verify accurate readings.",
+                        image: "https://example.com/calibration.jpg"
+                    }
+                ],
+                additionalNotes: "If calibration fails repeatedly, the sensor may need replacement. Avoid operating at maximum capacity until resolved."
+            }
+        };
+        
+        // Simulate database lookup with delay
+        setTimeout(() => {
+            if (craneId && mockDatabase[craneId]) {
+                const data = mockDatabase[craneId];
+                renderErrorInfo(craneId, data);
+            } else {
+                renderNotFound(craneId);
+            }
+        }, 1000);
+        
+        function renderErrorInfo(craneId, data) {
+            let html = `
+                <div class="status-card animate__animated animate__fadeIn">
+                    <div class="crane-header">
+                        <div>
+                            <h1>Crane ${craneId} <span class="error-code">${data.errorCode}</span></h1>
+                            <p>${data.model}</p>
+                        </div>
+                        <span class="severity ${data.severity}">${data.severity.toUpperCase()}</span>
+                    </div>
+                    
+                    <div class="meta-info">
+                        <div class="meta-item"><i>📅</i> Last Maintenance: ${data.lastMaintenance}</div>
+                        <div class="meta-item"><i>🆔</i> Serial: ${data.serial}</div>
+                    </div>
+                    
+                    <div class="error-description">
+                        <h3>Error Description</h3>
+                        <p>${data.errorDescription}</p>
+                    </div>
+                    
+                    <div class="steps-container">
+                        <h3>Troubleshooting Steps</h3>
+            `;
+            
+            data.steps.forEach((step, index) => {
+                html += `
+                    <div class="step animate__animated animate__fadeIn" style="animation-delay: ${index * 0.1}s">
+                        <div class="step-number">${index + 1}</div>
+                        <div class="step-content">
+                            <div class="step-title">${step.title}</div>
+                            <p>${step.description}</p>
+                            <div class="step-image">
+                                <img src="${step.image}" alt="${step.title}">
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `
+                    </div>
+                    
+                    ${data.additionalNotes ? `
+                    <div class="error-description">
+                        <h3>Additional Notes</h3>
+                        <p>${data.additionalNotes}</p>
+                    </div>
+                    ` : ''}
+                    
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="saveReport()">
+                            <span>💾</span> Save Report
+                        </button>
+                        <button class="btn btn-outline" onclick="printReport()">
+                            <span>🖨️</span> Print
+                        </button>
+                        <button class="btn btn-secondary" onclick="window.location.href='entry-mode.html'">
+                            <span>🔍</span> New Search
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            contentDiv.innerHTML = html;
+        }
+        
+        function renderNotFound(craneId) {
+            contentDiv.innerHTML = `
+                <div class="status-card not-found animate__animated animate__fadeIn">
+                    <div class="not-found-icon">❌</div>
+                    <h2>No Records Found</h2>
+                    <p>We couldn't find any error information for crane <strong>${craneId || 'N/A'}</strong> in our database.</p>
+                    
+                    <div class="action-buttons" style="justify-content: center;">
+                        <button class="btn btn-primary" onclick="window.location.href='manual-entry.html'">
+                            <span>⌨️</span> Try Manual Entry
+                        </button>
+                        <button class="btn btn-outline" onclick="window.location.href='qr-scanner.html'">
+                            <span>📷</span> Try QR Scanner
+                        </button>
+                        <button class="btn btn-secondary" onclick="window.location.href='entry-mode.html'">
+                            <span>↩️</span> Back to Search
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function saveReport() {
+            // In a real app, implement save functionality
+            alert('Report saved to your local storage!');
+            
+            // Add visual feedback
+            const btn = document.querySelector('.btn-primary');
+            btn.innerHTML = '<span>✓</span> Saved!';
+            setTimeout(() => {
+                btn.innerHTML = '<span>💾</span> Save Report';
+            }, 2000);
+        }
+        
+        function printReport() {
+            window.print();
+        }
+    </script>
+</body>
+</html>
