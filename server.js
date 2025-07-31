@@ -12,10 +12,10 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(bodyParser.json());
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const _dirname = path.dirname(_filename);
 app.use(express.static(path.join(__dirname, "public")));
 
-// MongoDB Connect
+// ✅ MongoDB Connect
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
@@ -23,7 +23,7 @@ mongoose.connect(process.env.MONGO_URI, {
 .then(() => console.log("✅ MongoDB Connected"))
 .catch(err => console.error("❌ MongoDB Error:", err));
 
-// Schemas
+// ✅ Schemas
 const UserSchema = new mongoose.Schema({
   username: { type: String, unique: true },
   password: String
@@ -40,38 +40,39 @@ const CraneSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-const User = mongoose.model("User", UserSchema);
-const Crane = mongoose.model("Crane", CraneSchema);
+// ✅ Models (note: mongoose automatically plural banata hai, so users & cranes)
+const User = mongoose.model("User", UserSchema, "users");
+const Crane = mongoose.model("Crane", CraneSchema, "cranes");
 
-// Signup
+// ✅ Signup
 app.post("/api/auth/signup", async (req, res) => {
   try {
     const { username, password } = req.body;
     const exists = await User.findOne({ username });
-    if (exists) return res.status(400).json({ message: "User already exists" });
+    if (exists) return res.status(400).json({ message: "⚠ User already exists" });
 
     const user = new User({ username, password });
     await user.save();
     res.status(201).json({ message: "✅ Registered successfully" });
   } catch (err) {
-    res.status(500).json({ message: "❌ Server error" });
+    res.status(500).json({ message: "❌ Server error during signup" });
   }
 });
 
-// Login
+// ✅ Login
 app.post("/api/auth/login", async (req, res) => {
   try {
     const { username, password } = req.body;
     const user = await User.findOne({ username, password });
-    if (!user) return res.status(401).json({ message: "Invalid credentials" });
+    if (!user) return res.status(401).json({ message: "❌ Invalid credentials" });
 
     res.status(200).json({ message: "✅ Login successful" });
   } catch (err) {
-    res.status(500).json({ message: "❌ Server error" });
+    res.status(500).json({ message: "❌ Server error during login" });
   }
 });
 
-// Save Crane Data
+// ✅ Save Crane Data (add manually via form)
 app.post("/api/crane", async (req, res) => {
   try {
     const crane = new Crane(req.body);
@@ -82,16 +83,37 @@ app.post("/api/crane", async (req, res) => {
   }
 });
 
-// Get Crane Data by ID
-app.get("/api/crane/:id", async (req, res) => {
+// ✅ Fetch Crane Data by craneId OR errorCode
+app.get("/api/crane/:code", async (req, res) => {
   try {
-    const crane = await Crane.findOne({ craneId: req.params.id });
-    if (!crane) return res.status(404).json({ message: "Crane not found" });
+    const query = { 
+      $or: [
+        { craneId: req.params.code }, 
+        { errorCode: req.params.code }
+      ] 
+    };
+
+    const crane = await Crane.findOne(query);
+
+    if (!crane) {
+      return res.status(404).json({ message: "❌ No data found for this ID or Error Code" });
+    }
+
     res.status(200).json(crane);
   } catch (err) {
     res.status(500).json({ message: "❌ Error fetching crane data" });
   }
 });
 
-// Start Server
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+// ✅ Get All Cranes (for dashboard/reports)
+app.get("/api/cranes", async (req, res) => {
+  try {
+    const cranes = await Crane.find();
+    res.status(200).json(cranes);
+  } catch (err) {
+    res.status(500).json({ message: "❌ Failed to fetch cranes list" });
+  }
+});
+
+// ✅ Start Server
+app.listen(PORT, () => console.log(🚀 Server running on port ${PORT}));
