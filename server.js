@@ -72,7 +72,7 @@ app.post("/api/auth/login", async (req, res) => {
 });
 
 // Save Crane Data
-app.post("/api/crane", async (req, res) => {
+app.post("/api/cranes", async (req, res) => {
   try {
     const crane = new Crane(req.body);
     await crane.save();
@@ -83,12 +83,25 @@ app.post("/api/crane", async (req, res) => {
 });
 
 // Get Crane Data by ID
-app.get("/api/crane/:id", async (req, res) => {
+// Get Crane Data by ID or Error Code
+app.get("/api/cranes/:code", async (req, res) => {
   try {
-    const crane = await Crane.findOne({ craneId: req.params.id });
-    if (!crane) return res.status(404).json({ message: "Crane not found" });
+    const query = { 
+      $or: [
+        { craneId: req.params.code }, 
+        { errorCode: req.params.code }
+      ] 
+    };
+
+    const crane = await Crane.findOne(query);
+
+    if (!crane) {
+      return res.status(404).json({ message: "❌ No data found for this ID or Error Code" });
+    }
+
     res.status(200).json(crane);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "❌ Error fetching crane data" });
   }
 });
